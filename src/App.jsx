@@ -40,6 +40,7 @@ import Admin from './Components/AdminPage/Admin';
 import AdminDashboard from './Components/AdminDetails/AdminDetails';
 import AssessmentPlayer from './Components/Assement/Assement';
 import TaskDiary from './Components/Task/Task';
+import AdminForm from './Components/Admin_form/Admin_form';
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
            <Route path="/adminDetails" element={<AdminDashboard />} />
            <Route path="/assesment" element={<AssessmentPlayer />} />
            <Route path="/task" element={<TaskDiary />} />
+           <Route path="/admin_form" element={<AdminForm />} />
         </Routes>
       </div>
     </Router>

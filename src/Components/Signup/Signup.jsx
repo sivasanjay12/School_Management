@@ -3863,7 +3863,7 @@ const SignUp = () => {
   // ---- API call ----
   const createUserWithAPI = async (userData) => {
     // Send to login endpoint with only email and password
-    const response = await fetch('http://localhost:8080/auth/login', {
+    const response = await fetch('http://localhost:8080/api/student', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

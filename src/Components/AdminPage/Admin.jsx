@@ -47,7 +47,7 @@
  
  const SignIn = () => {
    const [formData, setFormData] = useState({
-     username: '',
+     name: '',
      password: ''
    });
    
@@ -90,8 +90,8 @@
    const validateForm = () => {
      const newErrors = {};
  
-     if (!formData.username.trim()) {
-       newErrors.username = 'Username is required';
+     if (!formData.name.trim()) {
+       newErrors.name = 'name is required';
      }
  
      if (!formData.password) {
@@ -102,10 +102,10 @@
    };
  
    // API integration function to validate user
-   const validateUserWithAPI = async (username, password) => {
+   const validateUserWithAPI = async (name, password) => {
      try {
        // GET request to retrieve all users
-       const response = await fetch('http://localhost:8080/api/student', {
+       const response = await fetch('http://localhost:8080/api/admins', {
          method: 'GET',
          headers: {
            'Content-Type': 'application/json',
@@ -121,7 +121,7 @@
        
        // Check if user exists in the retrieved data
        const user = users.find(u => 
-         u.username === username && u.password === password
+         u.name === name && u.password === password
        );
        
        return user || null;
@@ -143,7 +143,7 @@
        
        try {
          // Validate user against API
-         const user = await validateUserWithAPI(formData.username, formData.password);
+         const user = await validateUserWithAPI(formData.name, formData.password);
          
          if (user) {
            console.log('Login successful:', user);
@@ -152,7 +152,7 @@
            // Redirect to dashboard or home page
            navigate('/adminDetails');
          } else {
-           setLoginError('Invalid username or password');
+           setLoginError('Invalid name or password');
          }
          
        } catch (error) {
@@ -603,23 +603,23 @@
                  <Form onSubmit={handleSubmit} noValidate>
                    <Form.Group className="mb-4">
                      <Form.Label className="pro-label">
-                       Username <span className="text-danger">*</span>
+                       name <span className="text-danger">*</span>
                      </Form.Label>
                      <Form.Control
                        type="text"
-                       name="username"
-                       value={formData.username}
+                       name="name"
+                       value={formData.name}
                        onChange={handleChange}
-                       placeholder="Enter your username"
+                       placeholder="Enter your name"
                        className="pro-input"
-                       isInvalid={!!errors.username}
+                       isInvalid={!!errors.name}
                        required
                      />
                      <Form.Control.Feedback
                        type="invalid"
                        className="d-block text-danger mt-1"
                      >
-                       {errors.username}
+                       {errors.name}
                      </Form.Control.Feedback>
                    </Form.Group>
  
@@ -679,8 +679,8 @@
                  <div className="text-center">
                    <p className="pro-footer-text">
                      Don't have an account?{' '}
-                     <Link to="/signup" className="pro-link">
-                       Sign Up
+                     <Link to="/admin_form" className="pro-link">
+                       Admin Sign Up
                      </Link>
                    </p>
                  </div>

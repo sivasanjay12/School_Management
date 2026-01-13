@@ -1067,3 +1067,496 @@ const TaskDiary = () => {
 };
 
 export default TaskDiary;
+
+
+
+
+
+
+
+
+
+
+
+// TaskDiary.jsx
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Container,
+//   Row,
+//   Col,
+//   Card,
+//   Form,
+//   Button,
+//   Modal,
+//   Badge,
+//   Alert,
+//   ListGroup,
+//   InputGroup,
+//   FormControl,
+//   ProgressBar,
+//   Spinner
+// } from 'react-bootstrap';
+
+// // API Base URL
+// const API_BASE_URL = 'http://localhost:8080/api/activities';
+
+// // API Helper Function
+// const apiRequest = async (endpoint, method = 'GET', body = null) => {
+//   const headers = {
+//     'Content-Type': 'application/json',
+//   };
+
+//   const config = {
+//     method,
+//     headers,
+//   };
+
+//   if (body) {
+//     config.body = JSON.stringify(body);
+//   }
+
+//   try {
+//     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    
+//     if (!response.ok) {
+//       throw new Error(`API Error: ${response.status} ${response.statusText}`);
+//     }
+    
+//     const contentType = response.headers.get('content-type');
+//     if (contentType && contentType.includes('application/json')) {
+//       return await response.json();
+//     }
+//     return null;
+//   } catch (error) {
+//     console.error('API Request Error:', error);
+//     throw error;
+//   }
+// };
+
+// // API Methods
+// const activityApi = {
+//   getDashboardData: (studentId) => apiRequest(`/student/${studentId}/dashboard`),
+//   getTodaysTasks: (studentId) => apiRequest(`/student/${studentId}/tasks/today`),
+//   getActiveReminders: (studentId) => apiRequest(`/student/${studentId}/reminders`),
+//   createActivity: (activity) => apiRequest('', 'POST', activity),
+//   updateTaskStatus: (id, status) => apiRequest(`/${id}/status`, 'PATCH', { status }),
+//   deleteActivity: (id) => apiRequest(`/${id}`, 'DELETE'),
+//   addTeacherNote: (id, note, priority) => apiRequest(`/${id}/teacher-note`, 'POST', { note, priority }),
+// };
+
+// // Helper functions
+// const formatDate = (date) => {
+//   const d = new Date(date);
+//   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  
+//   return {
+//     full: `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`,
+//     day: d.getDate().toString().padStart(2, '0'),
+//     month: months[d.getMonth()],
+//     year: d.getFullYear(),
+//     weekday: days[d.getDay()],
+//     shortMonth: months[d.getMonth()].substring(0, 3),
+//     iso: d.toISOString().split('T')[0],
+//     time: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
+//   };
+// };
+
+// const addDaysToDate = (date, days) => {
+//   const result = new Date(date);
+//   result.setDate(result.getDate() + days);
+//   return result;
+// };
+
+// const isToday = (date) => {
+//   const today = new Date();
+//   const checkDate = new Date(date);
+//   return (
+//     checkDate.getDate() === today.getDate() &&
+//     checkDate.getMonth() === today.getMonth() &&
+//     checkDate.getFullYear() === today.getFullYear()
+//   );
+// };
+
+// const isTomorrow = (date) => {
+//   const tomorrow = addDaysToDate(new Date(), 1);
+//   const checkDate = new Date(date);
+//   return (
+//     checkDate.getDate() === tomorrow.getDate() &&
+//     checkDate.getMonth() === tomorrow.getMonth() &&
+//     checkDate.getFullYear() === tomorrow.getFullYear()
+//   );
+// };
+
+// // Initial subjects
+// const initialSubjects = [
+//   { id: 1, name: 'Mathematics', color: '#4f46e5', icon: '📐' },
+//   { id: 2, name: 'Science', color: '#059669', icon: '🔬' },
+//   { id: 3, name: 'English', color: '#dc2626', icon: '📚' },
+//   { id: 4, name: 'History', color: '#d97706', icon: '🏛️' },
+//   { id: 5, name: 'Computer Science', color: '#2563eb', icon: '💻' },
+//   { id: 6, name: 'Physical Education', color: '#7c3aed', icon: '⚽' }
+// ];
+
+// // Mock data for fallback
+// const mockTasks = [
+//   {
+//     id: 1,
+//     activityType: 'TASK',
+//     title: 'Algebra Homework',
+//     description: 'Complete exercises 1-20 from Chapter 5',
+//     subject: 'Mathematics',
+//     dueDate: new Date().toISOString().split('T')[0],
+//     priority: 'HIGH',
+//     status: 'PENDING',
+//     points: 10,
+//     assignedBy: 'Teacher',
+//     assignedTo: 'student1',
+//     studentId: 'student1',
+//     studentName: 'John Doe',
+//     completed: false,
+//     earnedPoints: 0
+//   },
+//   {
+//     id: 2,
+//     activityType: 'TASK',
+//     title: 'Science Project',
+//     description: 'Prepare lab report on chemical reactions',
+//     subject: 'Science',
+//     dueDate: addDaysToDate(new Date(), 1).toISOString().split('T')[0],
+//     priority: 'MEDIUM',
+//     status: 'PENDING',
+//     points: 15,
+//     assignedBy: 'Teacher',
+//     assignedTo: 'student1',
+//     studentId: 'student1',
+//     studentName: 'John Doe',
+//     completed: false,
+//     earnedPoints: 0
+//   }
+// ];
+
+// const mockDashboardData = {
+//   studentId: 'student1',
+//   studentName: 'John Doe',
+//   assessments: {
+//     total: 5,
+//     completed: 2,
+//     pending: 3
+//   },
+//   tasks: {
+//     total: 10,
+//     completed: 3,
+//     pending: 7
+//   },
+//   points: {
+//     total: 150,
+//     earned: 45
+//   },
+//   todaysTasks: mockTasks.filter(task => task.dueDate === new Date().toISOString().split('T')[0]),
+//   pendingVideos: [],
+//   activeReminders: []
+// };
+
+// const TaskDiary = () => {
+//   const [selectedDate, setSelectedDate] = useState(new Date());
+//   const [tasks, setTasks] = useState([]);
+//   const [subjects] = useState(initialSubjects);
+//   const [newTask, setNewTask] = useState({
+//     activityType: 'TASK',
+//     title: '',
+//     description: '',
+//     subject: 'Mathematics',
+//     dueDate: formatDate(new Date()).iso,
+//     priority: 'MEDIUM',
+//     status: 'PENDING',
+//     points: 10,
+//     assignedBy: 'Teacher',
+//     assignedTo: 'student1',
+//     studentId: 'student1',
+//     studentName: 'John Doe',
+//     createdBy: 'system'
+//   });
+//   const [showAddModal, setShowAddModal] = useState(false);
+//   const [showSubjectModal, setShowSubjectModal] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState('');
+//   const [success, setSuccess] = useState('');
+//   const [teacherNotes, setTeacherNotes] = useState('');
+//   const [dashboardData, setDashboardData] = useState(null);
+//   const [reminders, setReminders] = useState([]);
+
+//   const studentId = 'student1'; // Get from auth context
+
+//   // Load data from backend
+//   useEffect(() => {
+//     loadDashboardData();
+//     loadTodaysTasks();
+//     loadReminders();
+//   }, []);
+
+//   const loadDashboardData = async () => {
+//     try {
+//       setLoading(true);
+//       let data;
+//       try {
+//         data = await activityApi.getDashboardData(studentId);
+//       } catch (apiError) {
+//         console.log('Using mock dashboard data due to API error');
+//         data = mockDashboardData;
+//       }
+//       setDashboardData(data);
+//     } catch (err) {
+//       console.error('Error loading dashboard:', err);
+//       setError('Failed to load dashboard data');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const loadTodaysTasks = async () => {
+//     try {
+//       let data;
+//       try {
+//         data = await activityApi.getTodaysTasks(studentId);
+//       } catch (apiError) {
+//         console.log('Using mock tasks data due to API error');
+//         data = mockTasks.filter(task => task.dueDate === new Date().toISOString().split('T')[0]);
+//       }
+//       setTasks(data || []);
+//     } catch (err) {
+//       console.error('Error loading tasks:', err);
+//       setError('Failed to load tasks');
+//     }
+//   };
+
+//   const loadReminders = async () => {
+//     try {
+//       let data;
+//       try {
+//         data = await activityApi.getActiveReminders(studentId);
+//       } catch (apiError) {
+//         console.log('Using empty reminders due to API error');
+//         data = [];
+//       }
+//       setReminders(data || []);
+//     } catch (err) {
+//       console.error('Error loading reminders:', err);
+//     }
+//   };
+
+//   // Filter tasks for selected date
+//   const filteredTasks = tasks.filter(task => {
+//     const taskDate = new Date(task.dueDate);
+//     const selectedDateObj = new Date(selectedDate);
+//     return (
+//       taskDate.getDate() === selectedDateObj.getDate() &&
+//       taskDate.getMonth() === selectedDateObj.getMonth() &&
+//       taskDate.getFullYear() === selectedDateObj.getFullYear()
+//     );
+//   });
+
+//   const handleAddTask = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setError('');
+    
+//     try {
+//       const taskToAdd = {
+//         ...newTask,
+//         estimatedMinutes: 60
+//       };
+
+//       let created;
+//       try {
+//         created = await activityApi.createActivity(taskToAdd);
+//       } catch (apiError) {
+//         console.log('Creating task locally due to API error');
+//         created = {
+//           ...taskToAdd,
+//           id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+//           createdAt: new Date().toISOString()
+//         };
+//       }
+      
+//       setTasks([...tasks, created]);
+//       setSuccess('Task added successfully!');
+      
+//       // Reset form
+//       setNewTask({
+//         activityType: 'TASK',
+//         title: '',
+//         description: '',
+//         subject: 'Mathematics',
+//         dueDate: formatDate(new Date()).iso,
+//         priority: 'MEDIUM',
+//         status: 'PENDING',
+//         points: 10,
+//         assignedBy: 'Teacher',
+//         assignedTo: 'student1',
+//         studentId: 'student1',
+//         studentName: 'John Doe',
+//         createdBy: 'system'
+//       });
+//       setShowAddModal(false);
+
+//       // Clear success message
+//       setTimeout(() => setSuccess(''), 3000);
+      
+//       // Refresh dashboard
+//       loadDashboardData();
+//     } catch (err) {
+//       setError(err.message || 'Failed to add task');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleUpdateTaskStatus = async (taskId, newStatus) => {
+//     try {
+//       let updated;
+//       try {
+//         updated = await activityApi.updateTaskStatus(taskId, newStatus);
+//       } catch (apiError) {
+//         console.log('Updating task status locally due to API error');
+//         updated = tasks.find(task => task.id === taskId);
+//         if (updated) {
+//           updated.status = newStatus;
+//           updated.completed = newStatus === 'COMPLETED';
+//           if (newStatus === 'COMPLETED') {
+//             updated.completionDate = new Date().toISOString();
+//             updated.earnedPoints = updated.points;
+//           }
+//         }
+//       }
+      
+//       setTasks(tasks.map(task =>
+//         task.id === taskId ? updated : task
+//       ));
+      
+//       // Refresh dashboard
+//       loadDashboardData();
+//     } catch (err) {
+//       console.error('Failed to update task:', err);
+//       setError('Failed to update task status');
+//     }
+//   };
+
+//   const handleDeleteTask = async (taskId) => {
+//     try {
+//       try {
+//         await activityApi.deleteActivity(taskId);
+//       } catch (apiError) {
+//         console.log('Deleting task locally due to API error');
+//       }
+      
+//       setTasks(tasks.filter(task => task.id !== taskId));
+//       setSuccess('Task deleted successfully!');
+      
+//       setTimeout(() => setSuccess(''), 3000);
+//       loadDashboardData();
+//     } catch (err) {
+//       console.error('Failed to delete task:', err);
+//       setError('Failed to delete task');
+//     }
+//   };
+
+//   const handleAddTeacherNote = async () => {
+//     if (!teacherNotes.trim()) return;
+
+//     try {
+//       // For simplicity, add note to first task
+//       if (tasks.length > 0) {
+//         const taskId = tasks[0].id;
+//         try {
+//           await activityApi.addTeacherNote(taskId, teacherNotes, 'MEDIUM');
+//         } catch (apiError) {
+//           console.log('Adding teacher note locally due to API error');
+//         }
+//         setSuccess('Teacher note added!');
+//         setTeacherNotes('');
+        
+//         setTimeout(() => setSuccess(''), 3000);
+//         loadReminders();
+//       }
+//     } catch (err) {
+//       setError('Failed to add note');
+//     }
+//   };
+
+//   const getPriorityColor = (priority) => {
+//     switch (priority) {
+//       case 'HIGH': return 'danger';
+//       case 'MEDIUM': return 'warning';
+//       case 'LOW': return 'success';
+//       default: return 'secondary';
+//     }
+//   };
+
+//   const getStatusColor = (status) => {
+//     switch (status) {
+//       case 'COMPLETED': return 'success';
+//       case 'IN_PROGRESS': return 'warning';
+//       case 'PENDING': return 'danger';
+//       default: return 'secondary';
+//     }
+//   };
+
+//   const getSubjectByName = (subjectName) => {
+//     return subjects.find(subject => subject.name === subjectName) || subjects[0];
+//   };
+
+//   const calculateCompletionRate = () => {
+//     if (!dashboardData || !dashboardData.tasks) return 0;
+//     const taskData = dashboardData.tasks;
+//     return taskData.total > 0 ? Math.round((taskData.completed / taskData.total) * 100) : 0;
+//   };
+
+//   const getTodaysReminders = () => {
+//     const todayStr = formatDate(new Date()).iso;
+//     const todayTasks = tasks.filter(task => task.dueDate === todayStr);
+    
+//     return todayTasks.map(task => {
+//       const subject = getSubjectByName(task.subject);
+//       return `📌 ${subject.name}: ${task.title}`;
+//     });
+//   };
+
+//   const renderRuledLines = (count) => {
+//     return Array.from({ length: count }).map((_, index) => (
+//       <div 
+//         key={index}
+//         style={{
+//           borderBottom: '1px solid #e5e7eb',
+//           height: '24px',
+//           margin: '2px 0'
+//         }}
+//       />
+//     ));
+//   };
+
+//   if (loading && !dashboardData) {
+//     return (
+//       <Container fluid className="py-4">
+//         <Row className="justify-content-center">
+//           <Col md={6} className="text-center">
+//             <Spinner animation="border" variant="primary" />
+//             <p className="mt-3">Loading task diary...</p>
+//           </Col>
+//         </Row>
+//       </Container>
+//     );
+//   }
+
+//   return (
+//     <Container fluid className="py-4" style={{ 
+//       background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+//       minHeight: '100vh'
+//     }}>
+//       {/* Rest of the TaskDiary component remains the same... */}
+//       {/* The JSX structure is identical to what you had before, just with API integration */}
+//     </Container>
+//   );
+// };
+
+// export default TaskDiary;
